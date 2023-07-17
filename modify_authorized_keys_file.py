@@ -2,11 +2,12 @@ import sys
 
 from decouple import config as decouple_config
 
+from database_manager import DatabaseManager
 from ssh_client import SSHClient
 
 
 def modify_file(operate):
-    servers = decouple_config('SERVERS', cast=lambda x: x.split(','))
+    servers = DatabaseManager().get_server_info()
     local_script_file = 'add_remove_public_key_in_authorized_keys.sh'
     remote_script_file = f'/tmp/{local_script_file}'
     with open(decouple_config('SSH_VENDOR_KEY_PAIR_PUBLIC'), 'r', encoding='utf-8') as file:

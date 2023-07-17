@@ -2,8 +2,9 @@ import paramiko
 
 
 class SSHClient(object):
-    def __init__(self, hostname, username, private_key_path, port=22):
-        self.hostname = hostname
+    def __init__(self, server, username, private_key_path, port=22):
+        self.hostname = server['hostname']
+        self.dns = server['dns']
         self.username = username
         self.private_key_path = private_key_path
         self.port = port
@@ -12,7 +13,7 @@ class SSHClient(object):
 
     def connect(self):
         private_key = paramiko.Ed25519Key.from_private_key_file(self.private_key_path)
-        self.ssh.connect(self.hostname, port=self.port, username=self.username, pkey=private_key)
+        self.ssh.connect(self.dns, port=self.port, username=self.username, pkey=private_key)
         print(f'Connected to {self.hostname}.')
 
     def execute_command(self, command):
