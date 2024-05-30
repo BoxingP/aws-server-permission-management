@@ -10,12 +10,12 @@ def modify_file(operate):
     servers = DatabaseManager().get_server_info()
     local_script_file = 'add_remove_public_key_in_authorized_keys.sh'
     remote_script_file = f'/tmp/{local_script_file}'
-    with open(decouple_config('SSH_VENDOR_KEY_PAIR_PUBLIC'), 'r', encoding='utf-8') as file:
+    with open(decouple_config('SSH_USER_KEY_PAIR_PUBLIC'), 'r', encoding='utf-8') as file:
         public_key_content = file.read()
-    authorized_keys_file = decouple_config('SSH_VENDOR_AUTHORIZED_KEYS_FILE')
+    authorized_keys_file = decouple_config('SSH_USER_AUTHORIZED_KEYS_FILE')
     command = f'sudo bash {remote_script_file} {operate} "{public_key_content}" "{authorized_keys_file}"'
     for server in servers:
-        ssh = SSHClient(server, decouple_config('SSH_USER'), decouple_config('SSH_PRIVATE_KEY'))
+        ssh = SSHClient(server, decouple_config('SSH_ADMIN_USER'), decouple_config('SSH_ADMIN_PRIVATE_KEY'))
         try:
             ssh.connect()
             ssh.upload_file(local_script_file, remote_script_file)
