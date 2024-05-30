@@ -1,7 +1,6 @@
 import sys
 
-from decouple import config as decouple_config
-
+from config import config
 from database_manager import DatabaseManager
 from ssh_client import SSHClient
 
@@ -10,12 +9,12 @@ def modify_file(operate):
     servers = DatabaseManager().get_server_info()
     local_script_file = 'add_remove_public_key_in_authorized_keys.sh'
     remote_script_file = f'/tmp/{local_script_file}'
-    with open(decouple_config('SSH_USER_KEY_PAIR_PUBLIC'), 'r', encoding='utf-8') as file:
+    with open(config.ssh_user_key_pair_public_file, 'r', encoding='utf-8') as file:
         public_key_content = file.read()
-    authorized_keys_file = decouple_config('SSH_USER_AUTHORIZED_KEYS_FILE')
+    authorized_keys_file = config.ssh_user_authorized_keys_file_path
     command = f'sudo bash {remote_script_file} {operate} "{public_key_content}" "{authorized_keys_file}"'
     for server in servers:
-        ssh = SSHClient(server, decouple_config('SSH_ADMIN_USER'), decouple_config('SSH_ADMIN_PRIVATE_KEY'))
+        ssh = SSHClient(server, config.ssh_admin_user, config.ssh_admin_user_private_key)
         try:
             ssh.connect()
             ssh.upload_file(local_script_file, remote_script_file)
